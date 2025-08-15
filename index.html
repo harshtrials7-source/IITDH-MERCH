@@ -215,10 +215,12 @@
                 <input type="tel" id="whatsapp_no" name="whatsapp_no" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
               </div>
               <div>
-                <label for="batch_year" class="block text-sm font-medium text-gray-700">Batch Year</label>
+                <label for="batch_year" class="block text-sm font-medium text-gray-700">
+                  Batch Year <span class="text-xs text-gray-500">(will be used for printing on hoodie)</span>
+                </label>
                 <select id="batch_year" name="batch_year" placeholder="same batch year will be printed on the hoodie" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" required>
                   <option value="">Select Year</option>
-                  <option value="N/A">N/A</option>
+                  <option value="N/A">No batch year</option>
                   <option value="2023">2023</option>
                   <option value="2024">2024</option>
                   <option value="2025">2025</option>
@@ -357,25 +359,25 @@
         colors: ['Black', 'Navy', 'White'], sizes: allSizes, type: 'shirt' },
       { id: 2, name: 'T-Shirt 2', price:450, 
         images: {
-          'Black': ['images/d_t2.png','images/T2_front_black.png', 'images/T2_back_black.png']
+          'Black': ['images/T2_back_black.png','images/T2_front_black.png', 'images/d_t2.png']
         }, 
         colors: ['Black'], sizes: allSizes, type: 'shirt' },
       { id: 3, name: 'Standard Hoodie', price: 799, 
         images: {
-          'Black': ['images/d_st.png','images/st_b_b.png', 'images/st_f_b.png', 'images/st_s_b.png'],
-          'Navy': ['images/d_st.png','images/st_b_n.png', 'images/st_f_n.png', 'images/st_s_n.png']
+          'Black': ['images/st_b_b.png', 'images/st_f_b.png', 'images/st_s_b.png','images/d_st.png'],
+          'Navy': ['images/st_b_n.png', 'images/st_f_n.png', 'images/st_s_n.png','images/d_st.png']
         }, 
         colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
       { id: 4, name: 'CSE Hoodie', price: 899, 
         images: {
-          'Black': ['images/d_cs.png','images/cs_b_b.png', 'images/cs_f_b.png', 'images/st_s_b.png'],
-          'Navy': ['images/d_cs.png','images/cs_b_n.png', 'images/cs_f_n.png', 'images/st_s_n.png']
+          'Black': ['images/cs_b_b.png', 'images/cs_f_b.png', 'images/st_s_b.png','images/d_cs.png'],
+          'Navy': ['images/cs_b_n.png', 'images/cs_f_n.png', 'images/st_s_n.png','images/d_cs.png']
         }, 
         colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
       { id: 5, name: 'EE Hoodie', price: 899, 
         images: {
-          'Black': ['images/d_ee.png','images/ee_b_b.png', 'images/ee_f_b.png', 'images/st_s_b.png'],
-          'Navy': ['images/d_ee.png','images/ee_b_n.png', 'images/ee_f_n.png', 'images/st_s_n.png']
+          'Black': ['images/ee_b_b.png', 'images/ee_f_b.png', 'images/st_s_b.png','images/d_ee.png'],
+          'Navy': ['images/ee_b_n.png', 'images/ee_f_n.png', 'images/st_s_n.png','images/d_ee.png']
         }, 
         colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
       { id: 6, name: 'Polo T-Shirt', price: 450, 
