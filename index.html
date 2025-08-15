@@ -134,7 +134,6 @@
 
 <body class="bg-gray-100 text-gray-800">
 
-  <!-- Moving Text Banner -->
   <div class="relative flex overflow-x-hidden bg-red-600 text-white">
     <div class="py-2 animate-marquee whitespace-nowrap">
       <span class="text-lg font-semibold mx-4">Sale ends tomorrow! Grab your favorites now!</span>
@@ -147,7 +146,6 @@
   </div>
 
   <div class="container mx-auto px-4 md:px-8 py-8">
-    <!-- Floating Cart Icon -->
     <div id="cart-icon" class="cart-icon">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.158 1.762.704 1.762h10.978c.862 0 1.334-1.132.703-1.762l-2.294-2.293m-4.502-4.502L13 13" />
@@ -155,7 +153,6 @@
       <span id="cart-item-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
     </div>
 
-    <!-- Toast -->
     <div id="toast-notification" class="bg-green-500 text-white px-4 py-2 rounded-full shadow-lg">
       <p id="toast-message" class="text-sm font-semibold"></p>
     </div>
@@ -166,9 +163,7 @@
     </header>
 
     <main id="main-content">
-      <!-- This content will be shown or hidden based on the view -->
       <div id="main-view">
-          <!-- Menu Section -->
           <section id="menu-section" class="text-center mb-12">
             <div class="inline-flex rounded-md shadow-sm" role="group">
               <button id="catalogue-btn" type="button" class="py-3 px-6 text-lg font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700">
@@ -180,13 +175,11 @@
             </div>
           </section>
 
-          <!-- Products -->
           <section id="product-section" class="mb-12">
             <h2 class="text-4xl font-semibold text-gray-900 mb-8 text-center">Our Collection</h2>
             <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
           </section>
 
-          <!-- Cart -->
           <section id="cart-section" class="bg-white p-6 md:p-10 rounded-2xl shadow-lg mb-12">
             <h2 class="text-4xl font-semibold text-gray-900 mb-6 text-center">Your Cart</h2>
             <div id="cart-items" class="space-y-4"></div>
@@ -199,11 +192,9 @@
           </section>
       </div>
 
-      <!-- Checkout -->
       <section id="checkout-section" class="hidden bg-white p-6 md:p-10 rounded-2xl shadow-lg">
         <h2 class="text-4xl font-semibold text-gray-900 mb-8 text-center">Checkout</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <!-- Customer Details -->
           <div id="customer-details">
             <h3 class="text-2xl font-medium mb-6">Student Details</h3>
             <form id="checkout-form" class="space-y-6">
@@ -236,7 +227,6 @@
             </form>
           </div>
 
-          <!-- Payment Details -->
           <div id="payment-details">
             <h3 class="text-2xl font-medium mb-6">Order Summary & Payment</h3>
             <div id="checkout-cart-summary" class="bg-gray-50 p-6 rounded-lg mb-8">
@@ -301,7 +291,6 @@
     </footer>
   </div>
 
-  <!-- Modals -->
   <div id="message-box" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
     <div class="bg-white p-8 rounded-xl shadow-xl text-center max-w-sm w-full">
       <p id="message-text" class="text-xl font-medium mb-6"></p>
@@ -314,8 +303,7 @@
       <div class="relative mb-2">
         <div id="preview-image-container" class="overflow-hidden">
             <div id="preview-image-slider">
-                <!-- Images will be injected here by JS -->
-            </div>
+                </div>
         </div>
         <button id="prev-image" class="absolute left-2 top-1/2 -translate-y-1/2 p-2 text-4xl text-white bg-black bg-opacity-20 rounded-full hover:bg-opacity-50 z-10">&lt;</button>
         <button id="next-image" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-4xl text-white bg-black bg-opacity-20 rounded-full hover:bg-opacity-50 z-10">&gt;</button>
@@ -332,13 +320,11 @@
       <input type="text" id="modal-custom-name" maxlength="20" oninput="this.value = this.value.toUpperCase()" class="mt-2 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-indigo-500 focus:ring-indigo-500">
       <div class="mt-8 flex justify-end space-x-4">
         <button id="cancel-custom-name" class="bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-full hover:bg-gray-300 transition duration-300">Cancel</button>
-        <!-- FIX #1: Changed button text from "Save" to "Add to Cart" -->
         <button id="save-custom-name" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-full hover:bg-indigo-700 transition duration-300">Add to Cart</button>
       </div>
     </div>
   </div>
 
-  <!-- Size Chart Modal -->
   <div id="size-chart-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
     <div class="bg-white p-4 rounded-xl shadow-xl max-w-4xl w-full relative">
       <button id="close-size-chart-modal" class="absolute -top-3 -right-3 bg-white rounded-full p-1 text-gray-700 hover:text-gray-900 text-3xl font-bold leading-none">&times;</button>
@@ -346,12 +332,10 @@
     </div>
   </div>
 
-  <!-- Loading Overlay -->
   <div id="loading-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden items-center justify-center z-50">
     <div class="text-white text-4xl font-bold animate-pulse">LOADING...</div>
   </div>
   
-  <!-- Countdown Modal -->
   <div id="countdown-modal" class="fixed inset-0 bg-indigo-900 bg-opacity-95 hidden items-center justify-center z-50 text-white text-center">
     <div>
       <p class="text-3xl font-light mb-4">Placing your order...</p>
@@ -405,6 +389,7 @@
     let cart = [];
     let discount = 0;
     const customNameFee = 69;
+    const xxlFee = 10; // CHANGE: Added constant for XXL fee
 
     // DOM Elements
     const mainView = document.getElementById('main-view');
@@ -475,6 +460,21 @@
     const hideMessage = () => { messageBox.classList.add('hidden'); messageBox.classList.remove('flex'); };
     closeMessageButton.addEventListener('click', hideMessage);
 
+    // CHANGE: New function to calculate item price dynamically
+    const getItemPrice = (item) => {
+        const product = products.find(p => p.id === item.id);
+        if (!product) return 0;
+
+        let price = product.price;
+        if (item.size === 'XXL') {
+            price += xxlFee;
+        }
+        if (item.customName) {
+            price += customNameFee;
+        }
+        return price;
+    };
+
     const updateProductCardState = (card) => {
         const productId = parseInt(card.dataset.productId);
         const product = products.find(p => p.id === productId);
@@ -531,7 +531,7 @@
           </div>
           <div>
             <h3 class="text-2xl font-semibold text-gray-900 mb-2">${product.name}</h3>
-            <p class="text-xl font-medium text-indigo-600">Rs. ${product.price}</p>
+            <p class="text-xl font-medium text-indigo-600">Rs. ${product.price} <span class="text-sm text-gray-500">(+Rs. ${xxlFee} for XXL)</span></p>
             <div class="mt-6 space-y-4">
               <div>
                 <label class="block text-base font-medium text-gray-700 mb-2">Size:</label>
@@ -633,10 +633,10 @@
       } else {
         cart.forEach((item, index) => {
           const product = products.find(p => p.id === item.id);
-          let itemPrice = product.price;
-          let itemDetails = `${product.name} - ${item.color} (${item.size})`;
-          if (item.customName) { itemPrice += customNameFee; itemDetails += ` + Custom Name: "${item.customName}"`; }
+          const itemPrice = getItemPrice(item); // CHANGE: Use new price function
           subtotal += itemPrice;
+          let itemDetails = `${product.name} - ${item.color} (${item.size})`;
+          if (item.customName) { itemDetails += ` + Custom Name: "${item.customName}"`; }
           const cartItem = document.createElement('div');
           cartItem.className = 'flex justify-between items-center bg-gray-50 p-4 rounded-lg';
           cartItem.innerHTML = `<div><p class="font-medium text-lg">${itemDetails}</p><p class="text-sm text-gray-500">Rs. ${itemPrice}</p></div><button class="remove-from-cart-btn text-red-500 hover:text-red-700 font-bold text-lg" data-index="${index}">Remove</button>`;
@@ -729,6 +729,7 @@
     const handlePlaceOrder = async (event) => {
         event.preventDefault();
         
+        // FIX: Improved validation to list missing fields
         const name = document.getElementById('name').value.trim();
         const email = document.getElementById('email').value.trim();
         const rollNo = document.getElementById('roll_no').value.trim();
@@ -736,21 +737,25 @@
         const batchYear = document.getElementById('batch_year').value.trim();
         const screenshotFile = document.getElementById('payment-screenshot').files[0];
 
-        if (!name || !email || !rollNo || !whatsappNo || !batchYear) {
-            showMessage('Please fill in all customer details.');
+        let missingFields = [];
+        if (!name) missingFields.push('Full Name');
+        if (!email) missingFields.push('Email Address');
+        if (!rollNo) missingFields.push('Roll No.');
+        if (!whatsappNo) missingFields.push('WhatsApp No.');
+        if (!batchYear) missingFields.push('Batch Year');
+        if (!screenshotFile) missingFields.push('Payment Screenshot');
+
+        if (missingFields.length > 0) {
+            showMessage(`Please fill in the following fields: ${missingFields.join(', ')}.`);
             return;
         }
-        // FIX #2: Added validation for exactly 10 digits
+
         if (whatsappNo.length !== 10) {
             showMessage('Please enter a valid 10-digit WhatsApp number.');
             return;
         }
         if (!email.endsWith('@iitdh.ac.in')) {
             showMessage('Please use a valid @iitdh.ac.in email address.');
-            return;
-        }
-        if (!screenshotFile) {
-            showMessage('Please upload a payment screenshot.');
             return;
         }
 
@@ -789,21 +794,20 @@
             reader.readAsDataURL(screenshotFile);
         });
         
-        const subtotal = cart.reduce((sum, item) => {
-            const product = products.find(p => p.id === item.id);
-            let price = product.price;
-            if (item.customName) price += customNameFee;
-            return sum + price;
-        }, 0);
+        const subtotal = cart.reduce((sum, item) => sum + getItemPrice(item), 0);
         const finalTotal = Math.max(0, subtotal - discount);
 
         const payload = {
             name: name, email: email, rollNo: rollNo, whatsappNo: whatsappNo, batchYear: batchYear,
             cart: cart.map(item => {
                 const product = products.find(p => p.id === item.id);
-                let price = product.price;
-                if (item.customName) price += customNameFee;
-                return { name: product.name, price: price, size: item.size, color: item.color, customName: item.customName || "N/A" };
+                return { 
+                    name: product.name, 
+                    price: getItemPrice(item), 
+                    size: item.size, 
+                    color: item.color, 
+                    customName: item.customName || "N/A" 
+                };
             }),
             discount: discount, total: finalTotal, screenshotData: screenshotData, screenshotType: screenshotFile.type
         };
@@ -884,9 +888,12 @@
         }
     };
     
+    // FIX: Overhauled coupon logic
     const applyCoupon = () => {
         const code = couponCodeInput.value.trim().toUpperCase();
         const cartSize = cart.length;
+        const subtotal = cart.reduce((sum, item) => sum + getItemPrice(item), 0);
+        const hasHoodie = cart.some(item => products.find(p => p.id === item.id).type === 'hoodie');
 
         if (cartSize === 0) {
             showMessage('Your cart is empty. Please add items to apply a coupon.');
@@ -895,26 +902,30 @@
             return;
         }
 
+        let newDiscount = 0;
         let applied = false;
+        let message = '';
+
         if (code === 'BUY2' && cartSize === 2) {
-            discount = 25;
+            newDiscount = (subtotal > 1100) ? 50 : 30;
             applied = true;
         } else if (code === 'BUY3' && cartSize === 3) {
-            discount = 50;
+            newDiscount = (subtotal > 1600 && hasHoodie) ? 100 : 65;
             applied = true;
         } else if (code === 'BUY4' && cartSize >= 4) {
-            discount = 100;
+            newDiscount = (subtotal > 2400 && hasHoodie) ? 200 : 100;
             applied = true;
         }
 
         if (applied) {
-            showMessage(`Coupon '${code}' applied successfully!`, false);
+            discount = newDiscount;
+            showMessage(`Coupon '${code}' applied! You get Rs. ${discount} off.`, false);
         } else {
-            discount = 0; // Reset discount if coupon is invalid or doesn't match cart size
+            discount = 0;
             if (code.startsWith('BUY')) {
-                 showMessage(`Coupon '${code}' is not valid for ${cartSize} item(s) in your cart.`);
+                showMessage(`Coupon '${code}' is not valid for ${cartSize} item(s) in your cart or conditions are not met.`);
             } else {
-                 showMessage('Invalid coupon code.');
+                showMessage('Invalid coupon code.');
             }
         }
         renderCart();
@@ -989,7 +1000,7 @@
         }
     };
 
-    // Setup for modals that were not reported as broken
+    // Setup for modals
     setupModalClosing(sizeChartModal, closeSizeChartModalBtn);
     setupModalClosing(customNameModal);
     previewModal.addEventListener('click', (e) => {
@@ -1014,7 +1025,6 @@
       }
     });
 
-    // FIX #1: Updated the custom name modal's primary button to add to cart directly
     saveCustomNameButton.addEventListener('click', () => {
         const customName = modalCustomNameInput.value.trim();
         if (!customName) {
@@ -1077,7 +1087,3 @@
   </script>
 </body>
 </html>
-
-
-
-
