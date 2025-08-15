@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IITDH Merch store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"/>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .container { max-width: 1200px; }
+    .product-card {
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      transition: transform 0.3s ease; border-radius: 12px;
+      overflow: hidden;
+    }
+    .product-card:hover { transform: translateY(-5px); }
+    .cart-icon {
+      position: fixed; top: 1.5rem; right: 1.5rem; z-index: 50; cursor: pointer;
+      background-color: #4338ca; color: white; padding: 0.75rem; border-radius: 9999px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      transition: transform 0.3s ease;
+    }
+    .cart-icon:hover { transform: scale(1.1); }
+    #toast-notification {
+      position: fixed;
+      top: 5rem; /* Positioned below the cart icon */
+      right: 1.5rem; /* Aligned with the cart icon */
+      z-index: 60;
+      transform: translateY(-20px) scale(0.95);
+      opacity: 0;
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      pointer-events: none; /* Important for when it's invisible */
+    }
+    #toast-notification.show {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    
+    .animate-marquee { animation: marquee 20s linear infinite; }
+    .animate-marquee2 { animation: marquee2 20s linear infinite; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
+    @keyframes marquee2 {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+
+    /* Styles for new size and color selectors */
+    .size-selector {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .size-option {
+      cursor: pointer;
+      border: 2px solid #d1d5db;
+      border-radius: 9999px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .size-option.selected {
+      border-color: #4338ca;
+      background-color: #4338ca;
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .color-selector {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .color-option-wrapper {
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem; /* space-y-1 */
+    }
+    .color-option {
+      width: 32px;
+      height: 32px;
+      border-radius: 9999px;
+      border: 2px solid #e5e7eb;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .color-option.selected {
+      border-color: #4338ca;
+      transform: scale(1.2);
+    }
+    
+    /* Styles for preview modal slider */
+    #preview-image-slider {
+        display: flex;
+        transition: transform 0.4s ease-in-out;
+    }
+    .slider-image {
+        flex-shrink: 0;
+        width: 100%;
+        max-height: 500px;
+        object-fit: contain;
+    }
+    .preview-dots {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #d1d5db;
+        transition: background-color 0.3s ease;
+        cursor: pointer;
+    }
+    .dot.active {
+        background-color: #4338ca;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Moving Text Banner -->
+  <div class="relative flex overflow-x-hidden bg-red-600 text-white">
+    <div class="py-2 animate-marquee whitespace-nowrap">
+      <span class="text-lg font-semibold mx-4">Sale ends tomorrow! Grab your favorites now!</span>
+      <span class="text-lg font-semibold mx-4">Sale ends tomorrow! Grab your favorites now!</span>
+    </div>
+    <div class="absolute top-0 py-2 animate-marquee2 whitespace-nowrap">
+      <span class="text-lg font-semibold mx-4">Sale ends tomorrow! Grab your favorites now!</span>
+      <span class="text-lg font-semibold mx-4">Sale ends tomorrow! Grab your favorites now!</span>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 md:px-8 py-8">
+    <!-- Floating Cart Icon -->
+    <div id="cart-icon" class="cart-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.158 1.762.704 1.762h10.978c.862 0 1.334-1.132.703-1.762l-2.294-2.293m-4.502-4.502L13 13" />
+      </svg>
+      <span id="cart-item-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-notification" class="bg-green-500 text-white px-4 py-2 rounded-full shadow-lg">
+      <p id="toast-message" class="text-sm font-semibold"></p>
+    </div>
+
+    <header class="text-center mb-16">
+      <h1 class="text-6xl font-bold text-gray-900 mb-4">IITDH Merch store</h1>
+      <p class="text-xl text-gray-600">Your style, your way.</p>
+    </header>
+
+    <main id="main-content">
+      <!-- This content will be shown or hidden based on the view -->
+      <div id="main-view">
+          <!-- Menu Section -->
+          <section id="menu-section" class="text-center mb-12">
+            <div class="inline-flex rounded-md shadow-sm" role="group">
+              <button id="catalogue-btn" type="button" class="py-3 px-6 text-lg font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700">
+                Catalogue
+              </button>
+              <button id="size-chart-btn" type="button" class="py-3 px-6 text-lg font-medium text-gray-900 bg-white rounded-r-lg border-t border-b border-r border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700">
+                Size Chart
+              </button>
+            </div>
+          </section>
+
+          <!-- Products -->
+          <section id="product-section" class="mb-12">
+            <h2 class="text-4xl font-semibold text-gray-900 mb-8 text-center">Our Collection</h2>
+            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+          </section>
+
+          <!-- Cart -->
+          <section id="cart-section" class="bg-white p-6 md:p-10 rounded-2xl shadow-lg mb-12">
+            <h2 class="text-4xl font-semibold text-gray-900 mb-6 text-center">Your Cart</h2>
+            <div id="cart-items" class="space-y-4"></div>
+            <div id="cart-summary" class="flex justify-between items-center text-2xl font-bold mt-8 pt-4 border-t-2 border-gray-200">
+              <span>Total:</span><span id="cart-total">Rs. 0.00</span>
+            </div>
+            <div class="mt-10 text-center">
+              <button id="checkout-button" class="bg-indigo-600 text-white font-bold py-4 px-10 rounded-full hover:bg-indigo-700 transition duration-300 transform hover:scale-105 text-lg">Proceed to Checkout</button>
+            </div>
+          </section>
+      </div>
+
+      <!-- Checkout -->
+      <section id="checkout-section" class="hidden bg-white p-6 md:p-10 rounded-2xl shadow-lg">
+        <h2 class="text-4xl font-semibold text-gray-900 mb-8 text-center">Checkout</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <!-- Customer Details -->
+          <div id="customer-details">
+            <h3 class="text-2xl font-medium mb-6">Student Details</h3>
+            <form id="checkout-form" class="space-y-6">
+              <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                <input type="text" id="name" name="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" required>
+              </div>
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="user@iitdh.ac.in" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" required>
+              </div>
+              <div>
+                <label for="roll_no" class="block text-sm font-medium text-gray-700">Roll No.</label>
+                <input type="text" id="roll_no" name="roll_no" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" required>
+              </div>
+              <div>
+                <label for="whatsapp_no" class="block text-sm font-medium text-gray-700">WhatsApp No.</label>
+                <input type="tel" id="whatsapp_no" name="whatsapp_no" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);">
+              </div>
+              <div>
+                <label for="batch_year" class="block text-sm font-medium text-gray-700">Batch Year</label>
+                <select id="batch_year" name="batch_year" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" required>
+                  <option value="">Select Year</option>
+                  <option value="N/A">N/A</option>
+                  <option value="2023">2023</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                </select>
+              </div>
+            </form>
+          </div>
+
+          <!-- Payment Details -->
+          <div id="payment-details">
+            <h3 class="text-2xl font-medium mb-6">Order Summary & Payment</h3>
+            <div id="checkout-cart-summary" class="bg-gray-50 p-6 rounded-lg mb-8">
+              <h4 class="text-xl font-semibold mb-4">Items:</h4>
+              <div id="checkout-cart-items" class="space-y-3 mb-4"></div>
+
+              <div class="space-y-2 mt-6 pt-4 border-t border-gray-300">
+                <div class="flex justify-between text-lg">
+                  <span>Subtotal:</span><span id="checkout-subtotal">Rs. 0.00</span>
+                </div>
+                <div class="flex justify-between items-center text-lg">
+                  <span>Discount:</span><span id="checkout-discount" class="text-red-500">- Rs. 0.00</span>
+                </div>
+              </div>
+
+              <div class="flex justify-between items-center text-2xl font-bold pt-4 border-t-2 border-gray-400 mt-6">
+                <span>Final Total:</span><span id="checkout-cart-total">Rs. 0.00</span>
+              </div>
+            </div>
+
+            <div class="mb-8 flex items-end space-x-2">
+              <div class="flex-grow">
+                <label for="coupon-code" class="block text-sm font-medium text-gray-700">Apply Coupon Code</label>
+                <input type="text" id="coupon-code" name="coupon-code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border">
+              </div>
+              <button id="apply-coupon-button" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-full hover:bg-indigo-700 transition duration-300">Apply</button>
+            </div>
+
+            <p class="text-lg mb-6">Please make your payment using the QR code below and then upload a screenshot to complete your order.</p>
+            <div class="flex flex-col items-center mb-8">
+              <img id="upi-qr" src="images/QR_code.jpg" class="w-40 h-auto rounded-lg border-2 border-indigo-500 p-2" onerror="this.onerror=null;this.src='https://placehold.co/160x160/ccc/ffffff?text=QR+Not+Found';">
+              <p class="mt-4 text-xl font-semibold">UPI ID: BHARATPE.8A0T0Z6I3N39104@fbpe </p>
+            </div>
+
+            <div>
+              <label for="payment-screenshot" class="block text-sm font-medium text-gray-700">Upload Payment Screenshot</label>
+              <input type="file" id="payment-screenshot" name="payment-screenshot" accept="image/*" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+            </div>
+
+            <div class="mt-8 flex justify-between items-center">
+              <button id="back-to-cart-button" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-full hover:bg-gray-600 transition duration-300 transform hover:scale-105">Back to Cart</button>
+              <button id="place-order-button" class="bg-green-600 text-white font-bold py-3 px-8 rounded-full hover:bg-green-700 transition duration-300 transform hover:scale-105">Place Order</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="text-center py-8 mt-16 border-t border-gray-200">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-4">Contact Us</h2>
+        <p class="text-lg text-gray-600">
+            For any queries, feel free to reach out to us:
+        </p>
+        <div class="mt-4 space-y-2">
+            <p class="text-lg text-gray-800">
+                <strong>WhatsApp:</strong> <a href="https://wa.me/918544074404" target="_blank" class="text-indigo-600 hover:underline">8544074404</a>
+            </p>
+            <p class="text-lg text-gray-800">
+                <strong>Email:</strong> <a href="mailto:prabhakarharsh04@gmail.com" class="text-indigo-600 hover:underline">prabhakarharsh04@gmail.com</a>
+            </p>
+        </div>
+    </footer>
+  </div>
+
+  <!-- Modals -->
+  <div id="message-box" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white p-8 rounded-xl shadow-xl text-center max-w-sm w-full">
+      <p id="message-text" class="text-xl font-medium mb-6"></p>
+      <button id="close-message" class="bg-indigo-600 text-white py-3 px-8 rounded-full hover:bg-indigo-700 text-lg">OK</button>
+    </div>
+  </div>
+  <div id="preview-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white p-6 rounded-xl shadow-xl max-w-2xl w-full">
+      <div class="flex justify-end"><button id="close-preview-modal" class="text-gray-500 hover:text-gray-900 text-3xl font-bold">&times;</button></div>
+      <div class="relative mb-2">
+        <div id="preview-image-container" class="overflow-hidden">
+            <div id="preview-image-slider">
+                <!-- Images will be injected here by JS -->
+            </div>
+        </div>
+        <button id="prev-image" class="absolute left-2 top-1/2 -translate-y-1/2 p-2 text-4xl text-white bg-black bg-opacity-20 rounded-full hover:bg-opacity-50 z-10">&lt;</button>
+        <button id="next-image" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-4xl text-white bg-black bg-opacity-20 rounded-full hover:bg-opacity-50 z-10">&gt;</button>
+      </div>
+      <div id="preview-dots-container" class="preview-dots"></div>
+      <h3 id="preview-title" class="text-xl font-semibold text-center mt-2"></h3>
+    </div>
+  </div>
+  <div id="custom-name-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+      <h3 class="text-3xl font-semibold mb-4 text-gray-900">Add Custom Name</h3>
+      <p class="text-gray-600 mb-6">Enter the name you want printed on your item. (+Rs. 69)</p>
+      <label for="modal-custom-name" class="block text-sm font-medium text-gray-700">Name to print (max 20 chars):</label>
+      <input type="text" id="modal-custom-name" maxlength="20" oninput="this.value = this.value.toUpperCase()" class="mt-2 block w-full rounded-md border-gray-300 shadow-sm p-3 border focus:border-indigo-500 focus:ring-indigo-500">
+      <div class="mt-8 flex justify-end space-x-4">
+        <button id="cancel-custom-name" class="bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-full hover:bg-gray-300 transition duration-300">Cancel</button>
+        <!-- FIX #1: Changed button text from "Save" to "Add to Cart" -->
+        <button id="save-custom-name" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-full hover:bg-indigo-700 transition duration-300">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Size Chart Modal -->
+  <div id="size-chart-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white p-4 rounded-xl shadow-xl max-w-4xl w-full relative">
+      <button id="close-size-chart-modal" class="absolute -top-3 -right-3 bg-white rounded-full p-1 text-gray-700 hover:text-gray-900 text-3xl font-bold leading-none">&times;</button>
+      <img id="size-chart-image" src="images/temp_size.png" alt="Size Chart" class="rounded-lg w-full">
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden items-center justify-center z-50">
+    <div class="text-white text-4xl font-bold animate-pulse">LOADING...</div>
+  </div>
+  
+  <!-- Countdown Modal -->
+  <div id="countdown-modal" class="fixed inset-0 bg-indigo-900 bg-opacity-95 hidden items-center justify-center z-50 text-white text-center">
+    <div>
+      <p class="text-3xl font-light mb-4">Placing your order...</p>
+      <p id="countdown-timer" class="text-8xl font-bold"></p>
+      <p id="countdown-message" class="text-2xl font-light mt-4"></p>
+    </div>
+  </div>
+
+  <script>
+    const allSizes = ['XS','S', 'M', 'L', 'XL', 'XXL'];
+    const HSizes = ['S', 'M', 'L', 'XL', 'XXL']; 
+    const products = [
+      { id: 1, name: 'T-Shirt 1', price: 399, 
+        images: {
+          'Black': ['images/T1_front_black.png', 'images/T1_back_black.png'],
+          'Navy': ['images/T1_front_navy.png', 'images/T1_back_navy.png'],
+          'White': ['images/T1_front_white.png', 'images/T1_back_white.png']
+        }, 
+        colors: ['Black', 'Navy', 'White'], sizes: allSizes, type: 'shirt' },
+      { id: 2, name: 'T-Shirt 2', price:450, 
+        images: {
+          'Black': ['images/d_t2.png','images/T2_front_black.png', 'images/T2_back_black.png']
+        }, 
+        colors: ['Black'], sizes: allSizes, type: 'shirt' },
+      { id: 3, name: 'Standard Hoodie', price: 799, 
+        images: {
+          'Black': ['images/d_st.png','images/st_b_b.png', 'images/st_f_b.png', 'images/st_s_b.png'],
+          'Navy': ['images/d_st.png','images/st_b_n.png', 'images/st_f_n.png', 'images/st_s_n.png']
+        }, 
+        colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
+      { id: 4, name: 'CSE Hoodie', price: 899, 
+        images: {
+          'Black': ['images/d_cs.png','images/cs_b_b.png', 'images/cs_f_b.png', 'images/st_s_b.png'],
+          'Navy': ['images/d_cs.png','images/cs_b_n.png', 'images/cs_f_n.png', 'images/st_s_n.png']
+        }, 
+        colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
+      { id: 5, name: 'EE Hoodie', price: 899, 
+        images: {
+          'Black': ['images/d_ee.png','images/ee_b_b.png', 'images/ee_f_b.png', 'images/st_s_b.png'],
+          'Navy': ['images/d_ee.png','images/ee_b_n.png', 'images/ee_f_n.png', 'images/st_s_n.png']
+        }, 
+        colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
+      { id: 6, name: 'Polo T-Shirt', price: 450, 
+        images: {
+          'Maroon': ['images/p_f_m.png', 'images/p_b_m.png'],
+          'Navy': ['images/p_f_n.png','images/p_b_n.png']
+        }, 
+        colors: ['Maroon', 'Navy'], sizes: HSizes, type: 'shirt'}
+    ];
+
+    let cart = [];
+    let discount = 0;
+    const customNameFee = 69;
+
+    // DOM Elements
+    const mainView = document.getElementById('main-view');
+    const productList = document.getElementById('product-list');
+    const cartItemsList = document.getElementById('cart-items');
+    const cartTotalSpan = document.getElementById('cart-total');
+    const checkoutButton = document.getElementById('checkout-button');
+    const cartSection = document.getElementById('cart-section');
+    const checkoutSection = document.getElementById('checkout-section');
+    const checkoutCartItemsList = document.getElementById('checkout-cart-items');
+    const checkoutSubtotalSpan = document.getElementById('checkout-subtotal');
+    const checkoutDiscountSpan = document.getElementById('checkout-discount');
+    const checkoutCartTotalSpan = document.getElementById('checkout-cart-total');
+    const placeOrderButton = document.getElementById('place-order-button');
+    const backToCartButton = document.getElementById('back-to-cart-button');
+    const checkoutForm = document.getElementById('checkout-form');
+    const couponCodeInput = document.getElementById('coupon-code');
+    const applyCouponButton = document.getElementById('apply-coupon-button');
+    const messageBox = document.getElementById('message-box');
+    const messageText = document.getElementById('message-text');
+    const closeMessageButton = document.getElementById('close-message');
+    const previewModal = document.getElementById('preview-modal');
+    const previewImageSlider = document.getElementById('preview-image-slider');
+    const previewImageContainer = document.getElementById('preview-image-container');
+    const previewDotsContainer = document.getElementById('preview-dots-container');
+    const prevImageButton = document.getElementById('prev-image');
+    const nextImageButton = document.getElementById('next-image');
+    const closePreviewModalButton = document.getElementById('close-preview-modal');
+    const previewTitle = document.getElementById('preview-title');
+    const cartIcon = document.getElementById('cart-icon');
+    const cartItemCount = document.getElementById('cart-item-count');
+    const toastNotification = document.getElementById('toast-notification');
+    const toastMessage = document.getElementById('toast-message');
+    const customNameModal = document.getElementById('custom-name-modal');
+    const modalCustomNameInput = document.getElementById('modal-custom-name');
+    const saveCustomNameButton = document.getElementById('save-custom-name');
+    const cancelCustomNameButton = document.getElementById('cancel-custom-name');
+    const catalogueBtn = document.getElementById('catalogue-btn');
+    const sizeChartBtn = document.getElementById('size-chart-btn');
+    const sizeChartModal = document.getElementById('size-chart-modal');
+    const sizeChartImage = document.getElementById('size-chart-image');
+    const closeSizeChartModalBtn = document.getElementById('close-size-chart-modal');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const countdownModal = document.getElementById('countdown-modal');
+    const countdownTimer = document.getElementById('countdown-timer');
+    const countdownMessage = document.getElementById('countdown-message');
+
+    let currentProductIndex = 0;
+    let currentImageIndex = 0;
+    let activeCustomNameProductCard = null;
+    let activeModalImages = [];
+    let touchStartX = 0;
+
+    const colorMap = {
+        'Black': '#000000', 'Navy': '#000080', 'White': '#FFFFFF', 'Maroon': '#800000'
+    };
+
+    const showMessage = (message, isCritical = true) => {
+      if (isCritical) {
+        messageText.textContent = message;
+        messageBox.classList.remove('hidden'); messageBox.classList.add('flex');
+      } else {
+        toastMessage.textContent = message;
+        toastNotification.classList.add('show');
+        setTimeout(() => { toastNotification.classList.remove('show'); }, 3000);
+      }
+    };
+    const hideMessage = () => { messageBox.classList.add('hidden'); messageBox.classList.remove('flex'); };
+    closeMessageButton.addEventListener('click', hideMessage);
+
+    const updateProductCardState = (card) => {
+        const productId = parseInt(card.dataset.productId);
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+
+        const selectedColorEl = card.querySelector('.color-option.selected');
+        const selectedSizeEl = card.querySelector('.size-option.selected');
+        
+        const selectedColor = selectedColorEl ? selectedColorEl.parentElement.dataset.color : product.colors[0];
+        const selectedSize = selectedSizeEl ? selectedSizeEl.dataset.size : product.sizes[0];
+        
+        const customNameToggle = card.querySelector(`.custom-name-toggle`);
+        const customNameValue = card.querySelector(`.custom-name-value`).value;
+        const wantsCustomName = customNameToggle ? customNameToggle.checked : false;
+        
+        const productImage = card.querySelector('.product-image');
+        if (product.images[selectedColor] && product.images[selectedColor].length > 0) {
+            productImage.src = product.images[selectedColor][0];
+            productImage.dataset.imageIndex = 0; // Reset image index on color change
+        }
+
+        const addToCartBtn = card.querySelector('.add-to-cart-btn');
+        const itemInCart = cart.find(item => 
+            item.id === productId &&
+            item.size === selectedSize &&
+            item.color === selectedColor &&
+            (wantsCustomName ? item.customName === customNameValue : !item.customName)
+        );
+
+        if (itemInCart) {
+            addToCartBtn.textContent = 'Added';
+            addToCartBtn.disabled = true;
+            addToCartBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            addToCartBtn.classList.add('bg-green-500', 'cursor-not-allowed');
+        } else {
+            addToCartBtn.textContent = 'Add to Cart';
+            addToCartBtn.disabled = false;
+            addToCartBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            addToCartBtn.classList.remove('bg-green-500', 'cursor-not-allowed');
+        }
+    };
+
+    const renderProducts = () => {
+      productList.innerHTML = products.map(product => {
+        const firstColor = product.colors[0];
+        const firstImage = product.images[firstColor] ? product.images[firstColor][0] : 'https://placehold.co/400x400/ccc/ffffff?text=Image+Not+Found';
+        
+        return `
+        <div class="product-card bg-white rounded-xl p-6 flex flex-col justify-between group" data-product-id="${product.id}">
+          <div class="relative product-image-container">
+              <img src="${firstImage}" alt="${product.name}" class="rounded-lg mb-6 w-full h-96 object-contain bg-gray-200 cursor-pointer product-image" data-product-id="${product.id}" data-image-index="0" onerror="this.onerror=null;this.src='https://placehold.co/400x400/ccc/ffffff?text=Image+Not+Found';">
+              <button class="card-prev-btn absolute left-2 top-1/2 -translate-y-1/2 p-1 text-2xl text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 z-10 block transition-opacity">&lt;</button>
+              <button class="card-next-btn absolute right-2 top-1/2 -translate-y-1/2 p-1 text-2xl text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 z-10 block transition-opacity">&gt;</button>
+          </div>
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">${product.name}</h3>
+            <p class="text-xl font-medium text-indigo-600">Rs. ${product.price}</p>
+            <div class="mt-6 space-y-4">
+              <div>
+                <label class="block text-base font-medium text-gray-700 mb-2">Size:</label>
+                <div class="size-selector">
+                    ${product.sizes.map((size, index) => `<div class="size-option ${index === 0 ? 'selected' : ''}" data-size="${size}">${size}</div>`).join('')}
+                </div>
+              </div>
+              <div>
+                <label class="block text-base font-medium text-gray-700 mb-2">Color:</label>
+                <div class="color-selector">
+                    ${product.colors.map((color, index) => `
+                        <div class="color-option-wrapper" data-color="${color}">
+                            <div class="color-option ${index === 0 ? 'selected' : ''}" data-color="${color}" style="background-color: ${colorMap[color] || color};"></div>
+                            <span class="text-xs text-gray-600">${color}</span>
+                        </div>
+                    `).join('')}
+                </div>
+              </div>
+              ${(product.type === 'shirt' || product.type === 'hoodie') ? `<div class="flex items-center space-x-2"><input type="checkbox" id="custom_name_toggle-${product.id}" class="custom-name-toggle rounded text-indigo-600 focus:ring-indigo-500" data-product-id="${product.id}"><label for="custom_name_toggle-${product.id}" class="text-sm font-medium text-gray-700">Add custom name (+Rs. ${customNameFee})</label><input type="hidden" class="custom-name-value"></div>` : ''}
+            </div>
+          </div>
+          <button class="add-to-cart-btn mt-6 bg-indigo-600 text-white font-bold py-3 px-6 rounded-full hover:bg-indigo-700 transition duration-300" data-product-id="${product.id}">Add to Cart</button>
+        </div>
+      `}).join('');
+      
+      addEventListenersToCards();
+    };
+
+    function addEventListenersToCards() {
+        document.querySelectorAll('.product-card').forEach(card => {
+            const productImage = card.querySelector('.product-image');
+            const productId = parseInt(card.dataset.productId);
+            const product = products.find(p => p.id === productId);
+
+            const updateCardImage = (newIndex) => {
+                const selectedColor = card.querySelector('.color-option.selected').parentElement.dataset.color;
+                const imagesForColor = product.images[selectedColor];
+                if (!imagesForColor || imagesForColor.length <= 1) return;
+                
+                const clampedIndex = (newIndex + imagesForColor.length) % imagesForColor.length;
+                productImage.src = imagesForColor[clampedIndex];
+                productImage.dataset.imageIndex = clampedIndex;
+            };
+
+            card.querySelector('.card-next-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                let currentIndex = parseInt(productImage.dataset.imageIndex || 0);
+                updateCardImage(currentIndex + 1);
+            });
+
+            card.querySelector('.card-prev-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                let currentIndex = parseInt(productImage.dataset.imageIndex || 0);
+                updateCardImage(currentIndex - 1);
+            });
+
+            productImage.addEventListener('click', (e) => handleImagePreview(e, card));
+
+            card.querySelectorAll('.size-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    card.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    updateProductCardState(card);
+                });
+            });
+
+            card.querySelectorAll('.color-option-wrapper').forEach(wrapper => {
+                wrapper.addEventListener('click', () => {
+                    card.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                    wrapper.querySelector('.color-option').classList.add('selected');
+                    updateProductCardState(card);
+                });
+            });
+            
+            const customNameToggle = card.querySelector('.custom-name-toggle');
+            if (customNameToggle) {
+                customNameToggle.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        activeCustomNameProductCard = card;
+                        modalCustomNameInput.value = '';
+                        showModal(customNameModal, 'customName');
+                    } else {
+                        card.querySelector('.custom-name-value').value = '';
+                        updateProductCardState(card);
+                    }
+                });
+            }
+
+            card.querySelector('.add-to-cart-btn').addEventListener('click', (e) => handleAddToCart(e, card));
+        });
+    }
+
+    const renderCart = () => {
+      cartItemsList.innerHTML = '';
+      checkoutCartItemsList.innerHTML = '';
+      let subtotal = 0;
+      if (cart.length === 0) {
+        cartItemsList.innerHTML = '<p class="text-center text-gray-500">Your cart is empty.</p>';
+      } else {
+        cart.forEach((item, index) => {
+          const product = products.find(p => p.id === item.id);
+          let itemPrice = product.price;
+          let itemDetails = `${product.name} - ${item.color} (${item.size})`;
+          if (item.customName) { itemPrice += customNameFee; itemDetails += ` + Custom Name: "${item.customName}"`; }
+          subtotal += itemPrice;
+          const cartItem = document.createElement('div');
+          cartItem.className = 'flex justify-between items-center bg-gray-50 p-4 rounded-lg';
+          cartItem.innerHTML = `<div><p class="font-medium text-lg">${itemDetails}</p><p class="text-sm text-gray-500">Rs. ${itemPrice}</p></div><button class="remove-from-cart-btn text-red-500 hover:text-red-700 font-bold text-lg" data-index="${index}">Remove</button>`;
+          cartItemsList.appendChild(cartItem);
+          const checkoutItem = document.createElement('div');
+          checkoutItem.className = 'flex justify-between text-lg text-gray-700';
+          checkoutItem.innerHTML = `<span>${itemDetails}</span><span>Rs. ${itemPrice}</span>`;
+          checkoutCartItemsList.appendChild(checkoutItem);
+        });
+      }
+      const finalTotal = Math.max(0, subtotal - discount);
+      cartTotalSpan.textContent = `Rs. ${finalTotal.toFixed(2)}`;
+      checkoutSubtotalSpan.textContent = `Rs. ${subtotal.toFixed(2)}`;
+      checkoutDiscountSpan.textContent = `- Rs. ${discount.toFixed(2)}`;
+      checkoutCartTotalSpan.textContent = `Rs. ${finalTotal.toFixed(2)}`;
+      cartItemCount.textContent = cart.length;
+    };
+
+    const handleAddToCart = (e, parentCard) => {
+      const productId = parseInt(parentCard.dataset.productId);
+      const size = parentCard.querySelector('.size-option.selected').dataset.size;
+      const color = parentCard.querySelector('.color-option.selected').parentElement.dataset.color;
+      const customNameToggle = parentCard.querySelector('.custom-name-toggle');
+      const customNameValue = parentCard.querySelector('.custom-name-value').value;
+      
+      let customName = null;
+      if (customNameToggle && customNameToggle.checked) {
+        if (!customNameValue.trim()) {
+          showMessage('Please enter a name for the custom print.');
+          return;
+        }
+        customName = customNameValue.trim();
+      }
+      
+      cart.push({ id: productId, size, color, customName });
+      discount = 0; // Reset discount when cart changes
+      renderCart();
+      updateProductCardState(parentCard);
+      showMessage('Item added to your cart!', false);
+    };
+
+    const handleRemoveFromCart = (e) => {
+      const idx = parseInt(e.target.dataset.index);
+      cart.splice(idx, 1);
+      discount = 0; // Reset discount when cart changes
+      renderCart();
+      document.querySelectorAll('.product-card').forEach(card => updateProductCardState(card));
+    };
+
+    const handleImagePreview = (e, card) => {
+        currentProductIndex = products.findIndex(p => p.id === parseInt(card.dataset.productId));
+        const product = products[currentProductIndex];
+        const selectedColor = card.querySelector('.color-option.selected').parentElement.dataset.color;
+        
+        activeModalImages = product.images[selectedColor] || Object.values(product.images)[0];
+        
+        previewImageSlider.innerHTML = activeModalImages.map(src => `<img src="${src}" class="slider-image">`).join('');
+        
+        currentImageIndex = 0;
+        updateModalImage();
+        
+        previewDotsContainer.innerHTML = activeModalImages.map((_, index) => `<div class="dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`).join('');
+        document.querySelectorAll('.dot').forEach(dot => dot.addEventListener('click', (e) => {
+            currentImageIndex = parseInt(e.target.dataset.index);
+            updateModalImage();
+        }));
+
+        showModal(previewModal, 'preview');
+    };
+
+    const updateModalImage = () => {
+        const product = products[currentProductIndex];
+        previewImageSlider.style.transform = `translateX(-${currentImageIndex * 100}%)`;
+        previewTitle.textContent = product.name;
+
+        document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
+        document.querySelector(`.dot[data-index="${currentImageIndex}"]`)?.classList.add('active');
+    };
+
+    const showPrevImage = () => {
+        currentImageIndex = (currentImageIndex - 1 + activeModalImages.length) % activeModalImages.length;
+        updateModalImage();
+    };
+
+    const showNextImage = () => {
+        currentImageIndex = (currentImageIndex + 1) % activeModalImages.length;
+        updateModalImage();
+    };
+
+    const handlePlaceOrder = async (event) => {
+        event.preventDefault();
+        
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const rollNo = document.getElementById('roll_no').value.trim();
+        const whatsappNo = document.getElementById('whatsapp_no').value.trim();
+        const batchYear = document.getElementById('batch_year').value.trim();
+        const screenshotFile = document.getElementById('payment-screenshot').files[0];
+
+        if (!name || !email || !rollNo || !whatsappNo || !batchYear) {
+            showMessage('Please fill in all customer details.');
+            return;
+        }
+        // FIX #2: Added validation for exactly 10 digits
+        if (whatsappNo.length !== 10) {
+            showMessage('Please enter a valid 10-digit WhatsApp number.');
+            return;
+        }
+        if (!email.endsWith('@iitdh.ac.in')) {
+            showMessage('Please use a valid @iitdh.ac.in email address.');
+            return;
+        }
+        if (!screenshotFile) {
+            showMessage('Please upload a payment screenshot.');
+            return;
+        }
+
+        placeOrderButton.disabled = true;
+        
+        countdownModal.classList.remove('hidden');
+        countdownModal.classList.add('flex');
+        let countdownValue = 10;
+        let orderProcessed = false;
+        let countdownFinished = false;
+        let countdownInterval;
+
+        const startCountdown = () => {
+            countdownTimer.textContent = countdownValue;
+            countdownMessage.textContent = 'Please wait while we confirm your payment...';
+            countdownInterval = setInterval(() => {
+                countdownValue--;
+                countdownTimer.textContent = countdownValue;
+                if (countdownValue <= 0) {
+                    countdownTimer.textContent = '0';
+                    countdownMessage.textContent = 'Finalizing your order...';
+                    clearInterval(countdownInterval);
+                    countdownFinished = true;
+                    if (orderProcessed) {
+                        finishOrder();
+                    }
+                }
+            }, 1000);
+        };
+        startCountdown();
+
+        const screenshotData = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(screenshotFile);
+        });
+        
+        const subtotal = cart.reduce((sum, item) => {
+            const product = products.find(p => p.id === item.id);
+            let price = product.price;
+            if (item.customName) price += customNameFee;
+            return sum + price;
+        }, 0);
+        const finalTotal = Math.max(0, subtotal - discount);
+
+        const payload = {
+            name: name, email: email, rollNo: rollNo, whatsappNo: whatsappNo, batchYear: batchYear,
+            cart: cart.map(item => {
+                const product = products.find(p => p.id === item.id);
+                let price = product.price;
+                if (item.customName) price += customNameFee;
+                return { name: product.name, price: price, size: item.size, color: item.color, customName: item.customName || "N/A" };
+            }),
+            discount: discount, total: finalTotal, screenshotData: screenshotData, screenshotType: screenshotFile.type
+        };
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzKu0Kbrm2kgr7C0wF30frvl7CoWllJAQ7lG5CoUZL6IbeTOsyzLKuJ2TVdSlLZaUD2/exec';
+        
+        const finishOrder = () => {
+            countdownModal.classList.add('hidden');
+            countdownModal.classList.remove('flex');
+            showMessage('Thank you for your order! You will receive a confirmation mail shortly.');
+            checkoutForm.reset();
+            document.getElementById('payment-screenshot').value = '';
+            cart = [];
+            discount = 0;
+            renderCart();
+            document.querySelectorAll('.product-card').forEach(card => updateProductCardState(card));
+            setView('main');
+            history.pushState({view: 'main'}, '', '#');
+            placeOrderButton.disabled = false;
+        };
+
+        try {
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            orderProcessed = true;
+            if (countdownFinished) {
+                finishOrder();
+            }
+        } catch (error) {
+            clearInterval(countdownInterval);
+            countdownModal.classList.add('hidden');
+            countdownModal.classList.remove('flex');
+            showMessage('An error occurred while submitting your order. Please try again.');
+            console.error('Error submitting order:', error);
+            placeOrderButton.disabled = false;
+        }
+    };
+
+    const preloadAllImages = () => {
+      products.forEach(product => {
+        Object.values(product.images).forEach(imageArray => {
+          imageArray.forEach(imageUrl => {
+            const img = new Image();
+            img.src = imageUrl;
+          });
+        });
+      });
+    };
+
+    // --- History and View Management ---
+    const setView = (view) => {
+        mainView.classList.toggle('hidden', view !== 'main');
+        checkoutSection.classList.toggle('hidden', view !== 'checkout');
+        if (view === 'checkout') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    const showModal = (modalElement, historyState) => {
+        modalElement.classList.remove('hidden');
+        modalElement.classList.add('flex');
+        history.pushState({modal: historyState}, '');
+    };
+
+    const hideModal = (modalElement) => {
+        modalElement.classList.add('hidden');
+        modalElement.classList.remove('flex');
+    };
+    
+    window.onpopstate = (event) => {
+        hideModal(previewModal);
+        hideModal(sizeChartModal);
+        hideModal(customNameModal);
+        
+        if (history.state && history.state.view === 'checkout') {
+            setView('checkout');
+        } else {
+            setView('main');
+        }
+    };
+    
+    const applyCoupon = () => {
+        const code = couponCodeInput.value.trim().toUpperCase();
+        const cartSize = cart.length;
+
+        if (cartSize === 0) {
+            showMessage('Your cart is empty. Please add items to apply a coupon.');
+            discount = 0;
+            renderCart();
+            return;
+        }
+
+        let applied = false;
+        if (code === 'BUY2' && cartSize === 2) {
+            discount = 25;
+            applied = true;
+        } else if (code === 'BUY3' && cartSize === 3) {
+            discount = 50;
+            applied = true;
+        } else if (code === 'BUY4' && cartSize >= 4) {
+            discount = 100;
+            applied = true;
+        }
+
+        if (applied) {
+            showMessage(`Coupon '${code}' applied successfully!`, false);
+        } else {
+            discount = 0; // Reset discount if coupon is invalid or doesn't match cart size
+            if (code.startsWith('BUY')) {
+                 showMessage(`Coupon '${code}' is not valid for ${cartSize} item(s) in your cart.`);
+            } else {
+                 showMessage('Invalid coupon code.');
+            }
+        }
+        renderCart();
+    };
+
+
+    // Initial setup and Event Listeners
+    document.addEventListener('DOMContentLoaded', () => { 
+      history.replaceState({view: 'main'}, '', '#');
+      preloadAllImages(); 
+      renderProducts(); 
+      renderCart(); 
+
+      prevImageButton.addEventListener('click', showPrevImage);
+      nextImageButton.addEventListener('click', showNextImage);
+      closePreviewModalButton.addEventListener('click', () => {
+          hideModal(previewModal);
+          if (history.state && history.state.modal) {
+              history.back();
+          }
+      });
+    });
+
+    cartItemsList.addEventListener('click', (e) => { if (e.target.classList.contains('remove-from-cart-btn')) handleRemoveFromCart(e); });
+    
+    checkoutButton.addEventListener('click', () => {
+        if (cart.length === 0) { 
+            showMessage('Your cart is empty. Please add items before checking out.'); 
+            return; 
+        }
+        setView('checkout');
+        history.pushState({view: 'checkout'}, '', '#checkout');
+    });
+
+    placeOrderButton.addEventListener('click', handlePlaceOrder);
+    backToCartButton.addEventListener('click', () => history.back());
+    
+    applyCouponButton.addEventListener('click', applyCoupon);
+    
+    cartIcon.addEventListener('click', () => {
+        if (cart.length === 0) {
+            showMessage("Your cart is empty.");
+            return;
+        }
+        
+        if (!checkoutSection.classList.contains('hidden')) {
+             setView('main');
+        }
+
+        requestAnimationFrame(() => {
+            document.getElementById('cart-section').scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    // --- Generic Modal Closing Logic ---
+    const setupModalClosing = (modal, closeButton) => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) { // Backdrop click
+                hideModal(modal);
+                if (history.state && history.state.modal) {
+                    history.back();
+                }
+            }
+        });
+        if(closeButton) {
+            closeButton.addEventListener('click', () => {
+                hideModal(modal);
+                if (history.state && history.state.modal) {
+                    history.back();
+                }
+            });
+        }
+    };
+
+    // Setup for modals that were not reported as broken
+    setupModalClosing(sizeChartModal, closeSizeChartModalBtn);
+    setupModalClosing(customNameModal);
+    previewModal.addEventListener('click', (e) => {
+        if (e.target === previewModal) {
+            hideModal(previewModal);
+            if (history.state && history.state.modal) {
+                history.back();
+            }
+        }
+    });
+
+
+    cancelCustomNameButton.addEventListener('click', () => {
+      if (activeCustomNameProductCard) {
+        const toggle = activeCustomNameProductCard.querySelector(`.custom-name-toggle`);
+        toggle.checked = false;
+        updateProductCardState(activeCustomNameProductCard);
+      }
+      hideModal(customNameModal);
+      if (history.state && history.state.modal) {
+        history.back();
+      }
+    });
+
+    // FIX #1: Updated the custom name modal's primary button to add to cart directly
+    saveCustomNameButton.addEventListener('click', () => {
+        const customName = modalCustomNameInput.value.trim();
+        if (!customName) {
+            showMessage('Please enter a name or click cancel.');
+            return;
+        }
+
+        if (activeCustomNameProductCard) {
+            const card = activeCustomNameProductCard;
+            const productId = parseInt(card.dataset.productId);
+            const size = card.querySelector('.size-option.selected').dataset.size;
+            const color = card.querySelector('.color-option.selected').parentElement.dataset.color;
+            
+            card.querySelector('.custom-name-value').value = customName;
+
+            cart.push({ id: productId, size, color, customName: customName });
+            discount = 0;
+            renderCart();
+            updateProductCardState(card);
+            showMessage('Item added to your cart!', false);
+        }
+
+        hideModal(customNameModal);
+        if (history.state && history.state.modal) {
+            history.back();
+        }
+    });
+
+    // Preview modal touch/swipe navigation
+    previewImageContainer.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+    previewImageContainer.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50) { // Swiped left
+            showNextImage();
+        } else if (touchEndX - touchStartX > 50) { // Swiped right
+            showPrevImage();
+        }
+    });
+
+    // Other modals
+    catalogueBtn.addEventListener('click', () => {
+        loadingOverlay.classList.remove('hidden');
+        loadingOverlay.classList.add('flex');
+        // Using a dummy PDF for demonstration
+        const pdfUrl = 'https://drive.google.com/file/d/.pdf';
+        window.open(pdfUrl, '_blank');
+        setTimeout(() => {
+            loadingOverlay.classList.add('hidden');
+            loadingOverlay.classList.remove('flex');
+        }, 500);
+    });
+
+    sizeChartBtn.addEventListener('click', () => {
+        sizeChartImage.src = 'images/temp_size.png';
+        sizeChartImage.onload = () => {
+            showModal(sizeChartModal, 'sizechart');
+        };
+    });
+
+  </script>
+</body>
+</html>
+
+
+
+
