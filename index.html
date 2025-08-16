@@ -911,10 +911,10 @@
         let applied = false;
         let message = '';
 
-        if (code === 'BUY2' && cartSize === 2) {
+        if (code === 'BUY2' && cartSize >= 2) {
             newDiscount = (subtotal > 1100) ? 50 : 30;
             applied = true;
-        } else if (code === 'BUY3' && cartSize === 3) {
+        } else if (code === 'BUY3' && cartSize >= 3) {
             newDiscount = (subtotal > 1600 && hasHoodie) ? 100 : 65;
             applied = true;
         } else if (code === 'BUY4' && cartSize >= 4) {
