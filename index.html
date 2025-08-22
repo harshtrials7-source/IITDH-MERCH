@@ -50,7 +50,7 @@
       to { transform: translateX(0); }
     }
 
-    /* Styles for new size and color selectors */
+    /* --- MODIFIED STYLES for smaller cards --- */
     .size-selector {
       display: flex;
       gap: 0.5rem;
@@ -60,12 +60,13 @@
       cursor: pointer;
       border: 2px solid #d1d5db;
       border-radius: 9999px;
-      width: 40px;
-      height: 40px;
+      width: 32px; /* MODIFIED: Was 40px */
+      height: 32px; /* MODIFIED: Was 40px */
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 600;
+      font-size: 0.875rem; /* MODIFIED: Added smaller font size */
       transition: all 0.2s ease;
     }
     .size-option.selected {
@@ -77,7 +78,7 @@
 
     .color-selector {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.5rem; /* MODIFIED: Was 0.75rem */
       align-items: flex-start;
       flex-wrap: wrap;
     }
@@ -89,8 +90,8 @@
         gap: 0.25rem; /* space-y-1 */
     }
     .color-option {
-      width: 32px;
-      height: 32px;
+      width: 28px; /* MODIFIED: Was 32px */
+      height: 28px; /* MODIFIED: Was 32px */
       border-radius: 9999px;
       border: 2px solid #e5e7eb;
       transition: all 0.2s ease;
@@ -128,6 +129,61 @@
     }
     .dot.active {
         background-color: #4338ca;
+    }
+    /* Tracking page styles */
+    .status-timeline {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin: 2rem 0;
+    }
+    .status-timeline::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background-color: #e5e7eb;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+    .timeline-progress {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        height: 4px;
+        background-color: #4f46e5;
+        transform: translateY(-50%);
+        z-index: 2;
+        transition: width 0.5s ease;
+    }
+    .status-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 3;
+        text-align: center;
+    }
+    .status-dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #e5e7eb;
+        border: 4px solid #fff;
+        transition: background-color 0.5s ease;
+    }
+    .status-step.completed .status-dot {
+        background-color: #4f46e5;
+    }
+    .status-label {
+        margin-top: 0.5rem;
+        font-weight: 600;
+        color: #6b7280;
+    }
+    .status-step.completed .status-label {
+        color: #111827;
     }
   </style>
 </head>
@@ -169,6 +225,10 @@
               <button id="catalogue-btn" type="button" class="py-3 px-6 text-lg font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700">
                 Catalogue
               </button>
+              <!-- ADDED: Track Order button -->
+              <button id="track-order-nav-btn" type="button" class="py-3 px-6 text-lg font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700">
+                Track Order
+              </button>
               <button id="size-chart-btn" type="button" class="py-3 px-6 text-lg font-medium text-gray-900 bg-white rounded-r-lg border-t border-b border-r border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700">
                 Size Chart
               </button>
@@ -191,6 +251,50 @@
             </div>
           </section>
       </div>
+
+      <!-- ADDED: Order Tracking Section -->
+      <section id="tracking-section" class="hidden bg-white p-6 md:p-10 rounded-2xl shadow-lg">
+        <button id="back-to-main-btn" class="mb-6 bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-full hover:bg-gray-300 transition duration-300">&larr; Back to Shop</button>
+        <h2 class="text-4xl font-semibold text-gray-900 mb-8 text-center">Track Your Order</h2>
+        <div class="max-w-md mx-auto">
+            <div class="space-y-4">
+                <div>
+                    <label for="track-order-id" class="block text-sm font-medium text-gray-700">Order ID</label>
+                    <input type="text" id="track-order-id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" placeholder="Enter your Order ID">
+                </div>
+                <div>
+                    <label for="track-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="track-email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" placeholder="Enter the email used for the order">
+                </div>
+            </div>
+            <div class="mt-6 text-center">
+                <button id="track-order-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-full hover:bg-indigo-700 transition duration-300 text-lg">Track</button>
+            </div>
+        </div>
+        <div id="tracking-results" class="mt-12 hidden">
+            <h3 class="text-2xl font-medium text-center mb-2">Order Status</h3>
+            <p id="tracking-order-id-display" class="text-center text-gray-500 mb-8"></p>
+            <div class="status-timeline">
+                <div class="timeline-progress" id="timeline-progress"></div>
+                <div class="status-step" id="status-ordered">
+                    <div class="status-dot"></div>
+                    <div class="status-label">Ordered</div>
+                </div>
+                <div class="status-step" id="status-packed">
+                    <div class="status-dot"></div>
+                    <div class="status-label">Packed</div>
+                </div>
+                <div class="status-step" id="status-printing">
+                    <div class="status-dot"></div>
+                    <div class="status-label">Printing</div>
+                </div>
+                <div class="status-step" id="status-shipped">
+                    <div class="status-dot"></div>
+                    <div class="status-label">Shipped</div>
+                </div>
+            </div>
+        </div>
+      </section>
 
       <section id="checkout-section" class="hidden bg-white p-6 md:p-10 rounded-2xl shadow-lg">
         <h2 class="text-4xl font-semibold text-gray-900 mb-8 text-center">Checkout</h2>
@@ -262,7 +366,7 @@
               <img id="upi-qr" src="images/QR_code.jpg" class="w-40 h-auto rounded-lg border-2 border-indigo-500 p-2" onerror="this.onerror=null;this.src='https://placehold.co/160x160/ccc/ffffff?text=QR+Not+Found';">
              <p class="mt-4 font-semibold text-sm sm:text-base md:text-lg lg:text-xl break-words max-w-full">
                 UPI ID: BHARATPE.8A0T0Z6I3N39104@fbpe
-            </p>
+              </p>
 
             </div>
 
@@ -441,6 +545,13 @@
     const countdownModal = document.getElementById('countdown-modal');
     const countdownTimer = document.getElementById('countdown-timer');
     const countdownMessage = document.getElementById('countdown-message');
+    // ADDED: Tracking page elements
+    const trackingSection = document.getElementById('tracking-section');
+    const trackOrderNavBtn = document.getElementById('track-order-nav-btn');
+    const backToMainBtn = document.getElementById('back-to-main-btn');
+    const trackOrderBtn = document.getElementById('track-order-btn');
+    const trackingResults = document.getElementById('tracking-results');
+
 
     let currentProductIndex = 0;
     let currentImageIndex = 0;
@@ -527,25 +638,26 @@
         const firstColor = product.colors[0];
         const firstImage = product.images[firstColor] ? product.images[firstColor][0] : 'https://placehold.co/400x400/ccc/ffffff?text=Image+Not+Found';
         
+        // --- MODIFIED PRODUCT CARD HTML with smaller classes ---
         return `
-        <div class="product-card bg-white rounded-xl p-6 flex flex-col justify-between group" data-product-id="${product.id}">
+        <div class="product-card bg-white rounded-xl p-4 flex flex-col justify-between group" data-product-id="${product.id}">
           <div class="relative product-image-container">
-              <img src="${firstImage}" alt="${product.name}" class="rounded-lg mb-6 w-full h-96 object-contain bg-gray-200 cursor-pointer product-image" data-product-id="${product.id}" data-image-index="0" onerror="this.onerror=null;this.src='https://placehold.co/400x400/ccc/ffffff?text=Image+Not+Found';">
+              <img src="${firstImage}" alt="${product.name}" class="rounded-lg mb-4 w-full h-72 object-contain bg-gray-200 cursor-pointer product-image" data-product-id="${product.id}" data-image-index="0" onerror="this.onerror=null;this.src='https://placehold.co/400x400/ccc/ffffff?text=Image+Not+Found';">
               <button class="card-prev-btn absolute left-2 top-1/2 -translate-y-1/2 p-1 text-2xl text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 z-10 block transition-opacity">&lt;</button>
               <button class="card-next-btn absolute right-2 top-1/2 -translate-y-1/2 p-1 text-2xl text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 z-10 block transition-opacity">&gt;</button>
           </div>
           <div>
-            <h3 class="text-2xl font-semibold text-gray-900 mb-2">${product.name}</h3>
-            <p class="text-xl font-medium text-indigo-600">Rs. ${product.price} <span class="text-sm text-gray-500">(+Rs. ${xxlFee} for XXL)</span></p>
-            <div class="mt-6 space-y-4">
+            <h3 class="text-xl font-semibold text-gray-900 mb-1">${product.name}</h3>
+            <p class="text-lg font-medium text-indigo-600">Rs. ${product.price} <span class="text-xs text-gray-500">(+Rs. ${xxlFee} for XXL)</span></p>
+            <div class="mt-4 space-y-3">
               <div>
-                <label class="block text-base font-medium text-gray-700 mb-2">Size:</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Size:</label>
                 <div class="size-selector">
                     ${product.sizes.map((size, index) => `<div class="size-option ${index === 0 ? 'selected' : ''}" data-size="${size}">${size}</div>`).join('')}
                 </div>
               </div>
               <div>
-                <label class="block text-base font-medium text-gray-700 mb-2">Color:</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Color:</label>
                 <div class="color-selector">
                     ${product.colors.map((color, index) => `
                         <div class="color-option-wrapper" data-color="${color}">
@@ -555,10 +667,10 @@
                     `).join('')}
                 </div>
               </div>
-              ${(product.type === 'shirt' || product.type === 'hoodie') ? `<div class="flex items-center space-x-2"><input type="checkbox" id="custom_name_toggle-${product.id}" class="custom-name-toggle rounded text-indigo-600 focus:ring-indigo-500" data-product-id="${product.id}"><label for="custom_name_toggle-${product.id}" class="text-sm font-medium text-gray-700">Add custom name (+Rs. ${customNameFee})</label><input type="hidden" class="custom-name-value"></div>` : ''}
+              ${(product.type === 'shirt' || product.type === 'hoodie') ? `<div class="flex items-center space-x-2 pt-1"><input type="checkbox" id="custom_name_toggle-${product.id}" class="custom-name-toggle rounded text-indigo-600 focus:ring-indigo-500" data-product-id="${product.id}"><label for="custom_name_toggle-${product.id}" class="text-sm font-medium text-gray-700">Add custom name (+Rs. ${customNameFee})</label><input type="hidden" class="custom-name-value"></div>` : ''}
             </div>
           </div>
-          <button class="add-to-cart-btn mt-6 bg-indigo-600 text-white font-bold py-3 px-6 rounded-full hover:bg-indigo-700 transition duration-300" data-product-id="${product.id}">Add to Cart</button>
+          <button class="add-to-cart-btn mt-4 bg-indigo-600 text-white font-bold py-2.5 px-6 rounded-full hover:bg-indigo-700 transition duration-300">Add to Cart</button>
         </div>
       `}).join('');
       
@@ -865,7 +977,8 @@
     const setView = (view) => {
         mainView.classList.toggle('hidden', view !== 'main');
         checkoutSection.classList.toggle('hidden', view !== 'checkout');
-        if (view === 'checkout') {
+        trackingSection.classList.toggle('hidden', view !== 'tracking'); // ADDED
+        if (view === 'checkout' || view === 'tracking') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
@@ -886,8 +999,8 @@
         hideModal(sizeChartModal);
         hideModal(customNameModal);
         
-        if (history.state && history.state.view === 'checkout') {
-            setView('checkout');
+        if (history.state && history.state.view) {
+            setView(history.state.view);
         } else {
             setView('main');
         }
@@ -934,6 +1047,56 @@
             }
         }
         renderCart();
+    };
+
+    // --- ADDED: Order Tracking Logic ---
+    const handleTrackOrder = () => {
+        const orderId = document.getElementById('track-order-id').value.trim();
+        const email = document.getElementById('track-email').value.trim();
+
+        if (!orderId || !email) {
+            showMessage('Please enter both Order ID and Email.');
+            return;
+        }
+
+        // --- MOCK DATA ---
+        // In a real application, you would make an API call here.
+        const mockOrders = {
+            "ID-12345": { email: "test@iitdh.ac.in", status: "Printing" },
+            "ID-67890": { email: "user@iitdh.ac.in", status: "Shipped" },
+        };
+
+        const order = mockOrders[orderId];
+
+        if (order && order.email === email) {
+            updateTrackingTimeline(order.status);
+            document.getElementById('tracking-order-id-display').textContent = `Order #${orderId}`;
+            trackingResults.classList.remove('hidden');
+        } else {
+            showMessage('Order not found. Please check your Order ID and Email.');
+            trackingResults.classList.add('hidden');
+        }
+    };
+
+    const updateTrackingTimeline = (currentStatus) => {
+        const statuses = ['Ordered', 'Packed', 'Printing', 'Shipped'];
+        const currentStatusIndex = statuses.indexOf(currentStatus);
+
+        if (currentStatusIndex === -1) return;
+
+        // Reset all statuses
+        statuses.forEach(status => {
+            document.getElementById(`status-${status.toLowerCase()}`).classList.remove('completed');
+        });
+
+        // Mark statuses as complete
+        for (let i = 0; i <= currentStatusIndex; i++) {
+            document.getElementById(`status-${statuses[i].toLowerCase()}`).classList.add('completed');
+        }
+
+        // Update progress bar width
+        const progressPercentage = (currentStatusIndex / (statuses.length - 1)) * 100;
+        document.getElementById('timeline-progress').style.width = `${progressPercentage}%`;
     };
 
 
@@ -1088,6 +1251,20 @@
             showModal(sizeChartModal, 'sizechart');
         };
     });
+
+    // --- ADDED: Event Listeners for Tracking Page ---
+    trackOrderNavBtn.addEventListener('click', () => {
+        setView('tracking');
+        history.pushState({view: 'tracking'}, '', '#tracking');
+    });
+
+    backToMainBtn.addEventListener('click', () => {
+        setView('main');
+        history.pushState({view: 'main'}, '', '#');
+    });
+
+    trackOrderBtn.addEventListener('click', handleTrackOrder);
+
 
   </script>
 </body>
