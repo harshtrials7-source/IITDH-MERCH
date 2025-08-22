@@ -130,61 +130,6 @@
     .dot.active {
         background-color: #4338ca;
     }
-    /* Tracking page styles */
-    .status-timeline {
-        display: flex;
-        justify-content: space-between;
-        position: relative;
-        margin: 2rem 0;
-    }
-    .status-timeline::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background-color: #e5e7eb;
-        transform: translateY(-50%);
-        z-index: 1;
-    }
-    .timeline-progress {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        height: 4px;
-        background-color: #4f46e5;
-        transform: translateY(-50%);
-        z-index: 2;
-        transition: width 0.5s ease;
-    }
-    .status-step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        z-index: 3;
-        text-align: center;
-    }
-    .status-dot {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background-color: #e5e7eb;
-        border: 4px solid #fff;
-        transition: background-color 0.5s ease;
-    }
-    .status-step.completed .status-dot {
-        background-color: #4f46e5;
-    }
-    .status-label {
-        margin-top: 0.5rem;
-        font-weight: 600;
-        color: #6b7280;
-    }
-    .status-step.completed .status-label {
-        color: #111827;
-    }
   </style>
 </head>
 
@@ -225,10 +170,6 @@
               <button id="catalogue-btn" type="button" class="py-3 px-6 text-lg font-medium text-gray-900 bg-white rounded-l-lg border border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700">
                 Catalogue
               </button>
-              <!-- ADDED: Track Order button -->
-              <button id="track-order-nav-btn" type="button" class="py-3 px-6 text-lg font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700">
-                Track Order
-              </button>
               <button id="size-chart-btn" type="button" class="py-3 px-6 text-lg font-medium text-gray-900 bg-white rounded-r-lg border-t border-b border-r border-gray-200 hover:bg-gray-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700">
                 Size Chart
               </button>
@@ -251,50 +192,6 @@
             </div>
           </section>
       </div>
-
-      <!-- ADDED: Order Tracking Section -->
-      <section id="tracking-section" class="hidden bg-white p-6 md:p-10 rounded-2xl shadow-lg">
-        <button id="back-to-main-btn" class="mb-6 bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-full hover:bg-gray-300 transition duration-300">&larr; Back to Shop</button>
-        <h2 class="text-4xl font-semibold text-gray-900 mb-8 text-center">Track Your Order</h2>
-        <div class="max-w-md mx-auto">
-            <div class="space-y-4">
-                <div>
-                    <label for="track-order-id" class="block text-sm font-medium text-gray-700">Order ID</label>
-                    <input type="text" id="track-order-id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" placeholder="Enter your Order ID">
-                </div>
-                <div>
-                    <label for="track-email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                    <input type="email" id="track-email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border" placeholder="Enter the email used for the order">
-                </div>
-            </div>
-            <div class="mt-6 text-center">
-                <button id="track-order-btn" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-full hover:bg-indigo-700 transition duration-300 text-lg">Track</button>
-            </div>
-        </div>
-        <div id="tracking-results" class="mt-12 hidden">
-            <h3 class="text-2xl font-medium text-center mb-2">Order Status</h3>
-            <p id="tracking-order-id-display" class="text-center text-gray-500 mb-8"></p>
-            <div class="status-timeline">
-                <div class="timeline-progress" id="timeline-progress"></div>
-                <div class="status-step" id="status-ordered">
-                    <div class="status-dot"></div>
-                    <div class="status-label">Ordered</div>
-                </div>
-                <div class="status-step" id="status-packed">
-                    <div class="status-dot"></div>
-                    <div class="status-label">Packed</div>
-                </div>
-                <div class="status-step" id="status-printing">
-                    <div class="status-dot"></div>
-                    <div class="status-label">Printing</div>
-                </div>
-                <div class="status-step" id="status-shipped">
-                    <div class="status-dot"></div>
-                    <div class="status-label">Shipped</div>
-                </div>
-            </div>
-        </div>
-      </section>
 
       <section id="checkout-section" class="hidden bg-white p-6 md:p-10 rounded-2xl shadow-lg">
         <h2 class="text-4xl font-semibold text-gray-900 mb-8 text-center">Checkout</h2>
@@ -545,13 +442,6 @@
     const countdownModal = document.getElementById('countdown-modal');
     const countdownTimer = document.getElementById('countdown-timer');
     const countdownMessage = document.getElementById('countdown-message');
-    // ADDED: Tracking page elements
-    const trackingSection = document.getElementById('tracking-section');
-    const trackOrderNavBtn = document.getElementById('track-order-nav-btn');
-    const backToMainBtn = document.getElementById('back-to-main-btn');
-    const trackOrderBtn = document.getElementById('track-order-btn');
-    const trackingResults = document.getElementById('tracking-results');
-
 
     let currentProductIndex = 0;
     let currentImageIndex = 0;
@@ -977,8 +867,7 @@
     const setView = (view) => {
         mainView.classList.toggle('hidden', view !== 'main');
         checkoutSection.classList.toggle('hidden', view !== 'checkout');
-        trackingSection.classList.toggle('hidden', view !== 'tracking'); // ADDED
-        if (view === 'checkout' || view === 'tracking') {
+        if (view === 'checkout') {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
@@ -999,8 +888,8 @@
         hideModal(sizeChartModal);
         hideModal(customNameModal);
         
-        if (history.state && history.state.view) {
-            setView(history.state.view);
+        if (history.state && history.state.view === 'checkout') {
+            setView('checkout');
         } else {
             setView('main');
         }
@@ -1047,56 +936,6 @@
             }
         }
         renderCart();
-    };
-
-    // --- ADDED: Order Tracking Logic ---
-    const handleTrackOrder = () => {
-        const orderId = document.getElementById('track-order-id').value.trim();
-        const email = document.getElementById('track-email').value.trim();
-
-        if (!orderId || !email) {
-            showMessage('Please enter both Order ID and Email.');
-            return;
-        }
-
-        // --- MOCK DATA ---
-        // In a real application, you would make an API call here.
-        const mockOrders = {
-            "ID-12345": { email: "test@iitdh.ac.in", status: "Printing" },
-            "ID-67890": { email: "user@iitdh.ac.in", status: "Shipped" },
-        };
-
-        const order = mockOrders[orderId];
-
-        if (order && order.email === email) {
-            updateTrackingTimeline(order.status);
-            document.getElementById('tracking-order-id-display').textContent = `Order #${orderId}`;
-            trackingResults.classList.remove('hidden');
-        } else {
-            showMessage('Order not found. Please check your Order ID and Email.');
-            trackingResults.classList.add('hidden');
-        }
-    };
-
-    const updateTrackingTimeline = (currentStatus) => {
-        const statuses = ['Ordered', 'Packed', 'Printing', 'Shipped'];
-        const currentStatusIndex = statuses.indexOf(currentStatus);
-
-        if (currentStatusIndex === -1) return;
-
-        // Reset all statuses
-        statuses.forEach(status => {
-            document.getElementById(`status-${status.toLowerCase()}`).classList.remove('completed');
-        });
-
-        // Mark statuses as complete
-        for (let i = 0; i <= currentStatusIndex; i++) {
-            document.getElementById(`status-${statuses[i].toLowerCase()}`).classList.add('completed');
-        }
-
-        // Update progress bar width
-        const progressPercentage = (currentStatusIndex / (statuses.length - 1)) * 100;
-        document.getElementById('timeline-progress').style.width = `${progressPercentage}%`;
     };
 
 
@@ -1251,20 +1090,6 @@
             showModal(sizeChartModal, 'sizechart');
         };
     });
-
-    // --- ADDED: Event Listeners for Tracking Page ---
-    trackOrderNavBtn.addEventListener('click', () => {
-        setView('tracking');
-        history.pushState({view: 'tracking'}, '', '#tracking');
-    });
-
-    backToMainBtn.addEventListener('click', () => {
-        setView('main');
-        history.pushState({view: 'main'}, '', '#');
-    });
-
-    trackOrderBtn.addEventListener('click', handleTrackOrder);
-
 
   </script>
 </body>
