@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>IITDH Merch store</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"/>
 
   <style>
@@ -385,8 +387,8 @@
         colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
       { id: 5, name: 'EE Hoodie', price: 899, 
         images: {
-           'Black': ['images/ee_b_b.jpeg', 'images/ee_f_b.jpeg', 'images/st_s_b.jpeg','images/d_ee.jpeg'],
-            'Navy': ['images/ee_b_n.jpeg', 'images/ee_f_n.jpeg', 'images/st_s_n.jpeg','images/d_ee.jpeg']
+           'Black': ['images/cs_b_b.jpeg', 'images/cs_f_b.jpeg', 'images/st_s_b.jpeg','images/d_cs.jpeg'],
+            'Navy': ['images/cs_b_n.jpeg', 'images/cs_f_n.jpeg', 'images/st_s_n.jpeg','images/d_cs.jpeg']
         },
         colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
       { id: 6, name: 'Polo T-Shirt', price: 449, 
@@ -564,14 +566,15 @@
     };
 
     const renderProducts = () => {
-      productList.innerHTML = products.map(product => {
+      productList.innerHTML = products.map((product, index) => {
         const firstColor = product.colors[0];
         const firstImage = product.images[firstColor] ? product.images[firstColor][0] : 'https://placehold.co/400x400/ccc/ffffff?text=Image+Not+Found';
+        const loadingAttr = index === 0 ? 'fetchpriority="high"' : 'loading="lazy"';
         
         return `
         <div class="product-card bg-white rounded-xl p-4 flex flex-col justify-between group" data-product-id="${product.id}">
           <div class="relative product-image-container">
-              <img src="${firstImage}" alt="${product.name}" class="rounded-lg mb-4 w-full h-72 object-contain bg-gray-200 cursor-pointer product-image" data-product-id="${product.id}" data-image-index="0" onerror="this.onerror=null;this.src='https://placehold.co/400x400/ccc/ffffff?text=Image+Not+Found';">
+              <img src="${firstImage}" alt="${product.name}" class="rounded-lg mb-4 w-full h-72 object-contain bg-gray-200 cursor-pointer product-image" data-product-id="${product.id}" data-image-index="0" ${loadingAttr} onerror="this.onerror=null;this.src='https://placehold.co/400x400/ccc/ffffff?text=Image+Not+Found';">
               <button class="card-prev-btn absolute left-2 top-1/2 -translate-y-1/2 p-1 text-2xl text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 z-10 block transition-opacity">&lt;</button>
               <button class="card-next-btn absolute right-2 top-1/2 -translate-y-1/2 p-1 text-2xl text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 z-10 block transition-opacity">&gt;</button>
           </div>
@@ -895,17 +898,6 @@
         }
     };
 
-    const preloadAllImages = () => {
-      products.forEach(product => {
-        Object.values(product.images).forEach(imageArray => {
-          imageArray.forEach(imageUrl => {
-            const img = new Image();
-            img.src = imageUrl;
-          });
-        });
-      });
-    };
-
     // --- History and View Management ---
     const setView = (view) => {
         mainView.classList.toggle('hidden', view !== 'main');
@@ -986,7 +978,6 @@
       loadCart(); // Load cart from localStorage on page load
       loadCheckoutForm(); // Load form data from localStorage on page load
       history.replaceState({view: 'main'}, '', '#');
-      preloadAllImages(); 
       renderProducts(); 
       renderCart(); 
       // Update product cards based on loaded cart
