@@ -260,7 +260,7 @@
 
             <p class="text-lg mb-6">Please make your payment using the QR code below and then upload a screenshot to complete your order.</p>
             <div class="flex flex-col items-center mb-8">
-              <img id="upi-qr" src="images/QR_code.jpeg" class="w-40 h-auto rounded-lg border-2 border-indigo-500 p-2" onerror="this.onerror=null;this.src='https://placehold.co/160x160/ccc/ffffff?text=QR+Not+Found';">
+              <img id="upi-qr" src="images/QR_code.jpg" class="w-40 h-auto rounded-lg border-2 border-indigo-500 p-2" onerror="this.onerror=null;this.src='https://placehold.co/160x160/ccc/ffffff?text=QR+Not+Found';">
                <p class="mt-4 font-semibold text-sm sm:text-base md:text-lg lg:text-xl break-words max-w-full">
                 UPI ID: BHARATPE.8A0T0Z6I3N39104@fbpe
               </p>
@@ -385,8 +385,8 @@
         colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
       { id: 5, name: 'EE Hoodie', price: 899, 
         images: {
-           'Black': ['images/ee_b_b.jpeg', 'images/ee_f_b.jpeg', 'images/st_s_b.jpeg','images/d_ee.jpeg'],
-            'Navy': ['images/ee_b_n.jpeg', 'images/ee_f_n.jpeg', 'images/st_s_n.jpeg','images/d_ee.jpeg']
+           'Black': ['images/cs_b_b.jpeg', 'images/cs_f_b.jpeg', 'images/st_s_b.jpeg','images/d_cs.jpeg'],
+            'Navy': ['images/cs_b_n.jpeg', 'images/cs_f_n.jpeg', 'images/st_s_n.jpeg','images/d_cs.jpeg']
         },
         colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
       { id: 6, name: 'Polo T-Shirt', price: 449, 
@@ -457,6 +457,41 @@
 
     const colorMap = {
         'Black': '#000000', 'Navy': '#000080', 'White': '#FFFFFF', 'Maroon': '#800000'
+    };
+
+    // --- NEW: Functions to save and load data from localStorage ---
+    const saveCart = () => {
+        localStorage.setItem('merchStoreCart', JSON.stringify(cart));
+    };
+
+    const loadCart = () => {
+        const savedCart = localStorage.getItem('merchStoreCart');
+        if (savedCart) {
+            cart = JSON.parse(savedCart);
+        }
+    };
+
+    const saveCheckoutForm = () => {
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            rollNo: document.getElementById('roll_no').value,
+            whatsappNo: document.getElementById('whatsapp_no').value,
+            batchYear: document.getElementById('batch_year').value,
+        };
+        localStorage.setItem('merchStoreCheckoutForm', JSON.stringify(formData));
+    };
+
+    const loadCheckoutForm = () => {
+        const savedForm = localStorage.getItem('merchStoreCheckoutForm');
+        if (savedForm) {
+            const formData = JSON.parse(savedForm);
+            document.getElementById('name').value = formData.name || '';
+            document.getElementById('email').value = formData.email || '';
+            document.getElementById('roll_no').value = formData.rollNo || '';
+            document.getElementById('whatsapp_no').value = formData.whatsappNo || '';
+            document.getElementById('batch_year').value = formData.batchYear || '';
+        }
     };
 
     const showMessage = (message, isCritical = true) => {
@@ -687,12 +722,14 @@
       renderCart();
       updateProductCardState(parentCard);
       showMessage('Item added to your cart!', false);
+      saveCart(); // Save cart to localStorage
     };
 
     const handleRemoveFromCart = (e) => {
       const idx = parseInt(e.target.dataset.index);
       cart.splice(idx, 1);
       discount = 0; // Reset discount when cart changes
+      saveCart(); // Save cart to localStorage
       renderCart();
       document.querySelectorAll('.product-card').forEach(card => updateProductCardState(card));
     };
@@ -832,6 +869,9 @@
             document.getElementById('payment-screenshot').value = '';
             cart = [];
             discount = 0;
+            // Clear stored data after successful order
+            localStorage.removeItem('merchStoreCart');
+            localStorage.removeItem('merchStoreCheckoutForm');
             renderCart();
             document.querySelectorAll('.product-card').forEach(card => updateProductCardState(card));
             setView('main');
@@ -943,10 +983,16 @@
 
     // Initial setup and Event Listeners
     document.addEventListener('DOMContentLoaded', () => { 
+      loadCart(); // Load cart from localStorage on page load
+      loadCheckoutForm(); // Load form data from localStorage on page load
       history.replaceState({view: 'main'}, '', '#');
       preloadAllImages(); 
       renderProducts(); 
       renderCart(); 
+      // Update product cards based on loaded cart
+      document.querySelectorAll('.product-card').forEach(card => updateProductCardState(card));
+
+      checkoutForm.addEventListener('input', saveCheckoutForm); // Save form data on any input change
 
       prevImageButton.addEventListener('click', showPrevImage);
       nextImageButton.addEventListener('click', showNextImage);
@@ -1054,6 +1100,7 @@
             renderCart();
             updateProductCardState(card);
             showMessage('Item added to your cart!', false);
+            saveCart(); // Save cart to localStorage
         }
 
         hideModal(customNameModal);
