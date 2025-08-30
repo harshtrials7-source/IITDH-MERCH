@@ -261,7 +261,7 @@
             <p class="text-lg mb-6">Please make your payment using the QR code below and then upload a screenshot to complete your order.</p>
             <div class="flex flex-col items-center mb-8">
               <img id="upi-qr" src="images/QR_code.jpg" class="w-40 h-auto rounded-lg border-2 border-indigo-500 p-2" onerror="this.onerror=null;this.src='https://placehold.co/160x160/ccc/ffffff?text=QR+Not+Found';">
-             <p class="mt-4 font-semibold text-sm sm:text-base md:text-lg lg:text-xl break-words max-w-full">
+               <p class="mt-4 font-semibold text-sm sm:text-base md:text-lg lg:text-xl break-words max-w-full">
                 UPI ID: BHARATPE.8A0T0Z6I3N39104@fbpe
               </p>
 
@@ -353,6 +353,7 @@
   <script>
     const allSizes = ['XS','S', 'M', 'L', 'XL', 'XXL'];
     const HSizes = ['S', 'M', 'L', 'XL', 'XXL']; 
+    
     const products = [
       { id: 1, name: 'T-Shirt 1', price: 399, 
         images: {
@@ -386,7 +387,7 @@
         images: {
            'Black': ['images/cs_b_b.jpeg', 'images/cs_f_b.jpeg', 'images/st_s_b.jpeg','images/d_cs.jpeg'],
             'Navy': ['images/cs_b_n.jpeg', 'images/cs_f_n.jpeg', 'images/st_s_n.jpeg','images/d_cs.jpeg']
-
+        },
         colors: ['Black','Navy'], sizes: HSizes, type: 'hoodie' },
       { id: 6, name: 'Polo T-Shirt', price: 449, 
         images: {
@@ -400,7 +401,7 @@
     let cart = [];
     let discount = 0;
     const customNameFee = 69;
-    const xxlFee = 10; // CHANGE: Added constant for XXL fee
+    const xxlFee = 10; 
 
     // DOM Elements
     const mainView = document.getElementById('main-view');
@@ -471,7 +472,6 @@
     const hideMessage = () => { messageBox.classList.add('hidden'); messageBox.classList.remove('flex'); };
     closeMessageButton.addEventListener('click', hideMessage);
 
-    // CHANGE: New function to calculate item price dynamically
     const getItemPrice = (item) => {
         const product = products.find(p => p.id === item.id);
         if (!product) return 0;
@@ -533,7 +533,6 @@
         const firstColor = product.colors[0];
         const firstImage = product.images[firstColor] ? product.images[firstColor][0] : 'https://placehold.co/400x400/ccc/ffffff?text=Image+Not+Found';
         
-        // --- MODIFIED PRODUCT CARD HTML with smaller classes ---
         return `
         <div class="product-card bg-white rounded-xl p-4 flex flex-col justify-between group" data-product-id="${product.id}">
           <div class="relative product-image-container">
@@ -645,7 +644,7 @@
       } else {
         cart.forEach((item, index) => {
           const product = products.find(p => p.id === item.id);
-          const itemPrice = getItemPrice(item); // CHANGE: Use new price function
+          const itemPrice = getItemPrice(item); 
           subtotal += itemPrice;
           let itemDetails = `${product.name} - ${item.color} (${item.size})`;
           if (item.customName) { itemDetails += ` + Custom Name: "${item.customName}"`; }
@@ -741,7 +740,6 @@
     const handlePlaceOrder = async (event) => {
         event.preventDefault();
         
-        // FIX: Improved validation to list missing fields
         const name = document.getElementById('name').value.trim();
         const email = document.getElementById('email').value.trim();
         const rollNo = document.getElementById('roll_no').value.trim();
@@ -900,7 +898,6 @@
         }
     };
     
-    // FIX: Overhauled coupon logic
     const applyCoupon = () => {
         const code = couponCodeInput.value.trim().toUpperCase();
         const cartSize = cart.length;
@@ -1071,7 +1068,7 @@
         const touchEndX = e.changedTouches[0].screenX;
         if (touchStartX - touchEndX > 50) { // Swiped left
             showNextImage();
-        } else if (touchEndX - touchStartX > 50) { // Swiped right
+        } else if (touchEndX - startX > 50) { // Swiped right
             showPrevImage();
         }
     });
@@ -1080,8 +1077,7 @@
     catalogueBtn.addEventListener('click', () => {
         loadingOverlay.classList.remove('hidden');
         loadingOverlay.classList.add('flex');
-        // Using a dummy PDF for demonstration
-        const pdfUrl = 'https://drive.google.com/file/d/11hCr7OV62ZeRf8i-tDQ0xnDIrzJRO9r6/view?usp=sharing.pdf';
+        const pdfUrl = 'https://drive.google.com/file/d/11hCr7OV62ZeRf8i-tDQ0xnDIrzJRO9r6/view?usp=sharing';
         window.open(pdfUrl, '_blank');
         setTimeout(() => {
             loadingOverlay.classList.add('hidden');
@@ -1090,12 +1086,18 @@
     });
 
     sizeChartBtn.addEventListener('click', () => {
-        sizeChartImage.src = 'images/temp_size.png';
+        sizeChartImage.src = 'images/temp_size.jpeg';
         sizeChartImage.onload = () => {
             showModal(sizeChartModal, 'sizechart');
         };
+        sizeChartImage.onerror = () => {
+            // Fallback in case local image fails
+            sizeChartImage.src = 'https://placehold.co/800x600/eee/333?text=Size+Chart+Missing';
+            showModal(sizeChartModal, 'sizechart'); 
+        }
     });
 
   </script>
 </body>
 </html>
+
