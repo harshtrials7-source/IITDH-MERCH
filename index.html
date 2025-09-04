@@ -969,7 +969,19 @@ const applyCoupon = () => {
                     return; 
                 }
             }
-        }
+        } else if (code === 'BIHARI007') {
+    const allItemsHaveCustomName = cart.every(item => item.customName);
+    if (allItemsHaveCustomName) {
+        newDiscount = Math.floor(subtotal * 0.25); // 25% discount, rounded down
+        applied = true;
+    } else {
+        showMessage('Coupon BIHARI007 requires all items to have a custom name.');
+        discount = 0;
+        renderCart();
+        return;
+    }
+}
+
         if (applied) {
             discount = newDiscount;
             showMessage(`Coupon '${code}' applied! You get Rs. ${discount.toFixed(2)} off.`, false);
