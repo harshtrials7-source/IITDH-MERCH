@@ -38,7 +38,7 @@
     }
     #toast-notification.show {
       transform: translateY(0) scale(1);
-      opacity: 1;;
+      opacity: 1;
     }
     
     .animate-marquee { animation: marquee 20s linear infinite; }
@@ -528,7 +528,7 @@
         const product = products.find(p => p.id === productId);
         if (!product) return;
 
-        const selectedColorEl = card.querySelector('.color-option.selected');
+        const selectedColorEl = card.querySelector('hello.color-option.selected');
         const selectedSizeEl = card.querySelector('.size-option.selected');
         
         const selectedColor = selectedColorEl ? selectedColorEl.parentElement.dataset.color : product.colors[0];
