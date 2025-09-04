@@ -930,11 +930,12 @@
         }
     };
     
-    const applyCoupon = () => {
+const applyCoupon = () => {
         const code = couponCodeInput.value.trim().toUpperCase();
         const cartSize = cart.length;
         const subtotal = cart.reduce((sum, item) => sum + getItemPrice(item), 0);
         const hasHoodie = cart.some(item => products.find(p => p.id === item.id).type === 'hoodie');
+        const batchYear = document.getElementById('batch_year').value; // Get selected batch year
 
         if (cartSize === 0) {
             showMessage('Your cart is empty. Please add items to apply a coupon.');
@@ -945,7 +946,6 @@
 
         let newDiscount = 0;
         let applied = false;
-        let message = '';
 
         if (code === 'BUY2' && cartSize >= 2) {
             newDiscount = (subtotal > 1100) ? 50 : 30;
@@ -956,14 +956,32 @@
         } else if (code === 'BUY4' && cartSize >= 4) {
             newDiscount = (subtotal > 2100 && hasHoodie) ? 150 : 100;
             applied = true;
+        } else if (code === 'NAME2023') {
+            if (cartSize >= 2 && batchYear === '2023') {
+                const itemsWithCustomName = cart.filter(item => item.customName).length;
+                if (itemsWithCustomName > 0) {
+                    newDiscount = itemsWithCustomName * customNameFee;
+                    applied = true;
+                } else {
+                    showMessage('Coupon is valid, but you have no items with a custom name to apply the discount to.');
+                    discount = 0;
+                    renderCart();
+                    return; 
+                }
+            }
         }
 
         if (applied) {
             discount = newDiscount;
-            showMessage(`Coupon '${code}' applied! You get Rs. ${discount} off.`, false);
+            showMessage(`Coupon '${code}' applied! You get Rs. ${discount.toFixed(2)} off.`, false);
         } else {
             discount = 0;
-            if (code.startsWith('BUY')) {
+            if (code === 'NAME2023') {
+                let errorMsg = "Coupon 'NAME2023' could not be applied. ";
+                if (cartSize < 2) errorMsg += "You need at least 2 items in your cart. ";
+                if (batchYear !== '2023') errorMsg += "Your selected batch year must be 2023.";
+                showMessage(errorMsg.trim());
+            } else if (code.startsWith('BUY')) {
                 showMessage(`Coupon '${code}' is not valid for ${cartSize} item(s) in your cart or conditions are not met.`);
             } else {
                 showMessage('Invalid coupon code.');
@@ -971,6 +989,7 @@
         }
         renderCart();
     };
+
 
 
     // Initial setup and Event Listeners
